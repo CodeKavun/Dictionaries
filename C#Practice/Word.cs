@@ -57,6 +57,8 @@ namespace C_Practice
             string newTranslation = Console.ReadLine();
 
             Translations[index] = newTranslation;
+
+            DictController.Save();
         }
 
         public void AddTranslation()
@@ -71,6 +73,8 @@ namespace C_Practice
 
                 Translations.Add(translation);
             }
+
+            DictController.Save();
         }
 
         public void RemoveTranslation()
@@ -80,6 +84,7 @@ namespace C_Practice
             index = CorrectIndex(index);
 
             Translations.RemoveAt(index);
+            DictController.Save();
         }
 
         public void Export()
@@ -91,8 +96,7 @@ namespace C_Practice
 
             using (StreamWriter writer = new StreamWriter(filename, false, Encoding.UTF8))
             {
-                string data = JsonConvert.SerializeObject(this, Formatting.Indented);
-                writer.WriteLine(data);
+                writer.WriteLine(this);
             }
         }
 

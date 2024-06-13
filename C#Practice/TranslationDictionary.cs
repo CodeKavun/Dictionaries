@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace C_Practice
 {
@@ -23,11 +22,17 @@ namespace C_Practice
         {
             while (true)
             {
-                Console.Write("Enter dictionary operation (0 - add; 1 - change word; 2 - like 1 but by original word; 3 - remove;\n 4 - save; 5 - load; 6 - show words; 7 - find word) - ");
-                int operation = int.Parse(Console.ReadLine());
+                Console.Write("Enter dictionary operation (0 - add; 1 - change word; 2 - like 1 but by original word; 3 - remove; 4 - show words; 5 - find word) - ");
+                int operation;
 
-                if (operation < 0) operation = 0;
-                if (operation > 7) operation = 7;
+                try
+                {
+                    operation = int.Parse(Console.ReadLine());
+                }
+                catch
+                {
+                    break;
+                }
 
                 switch (operation)
                 {
@@ -48,19 +53,15 @@ namespace C_Practice
                         Console.Clear();
                         break;
                     case 4:
-                        Save();
-                        break;
-                    case 5:
-                        Load();
-                        break;
-                    case 6:
                         Console.Clear();
                         Console.WriteLine(this);
                         break;
-                    case 7:
+                    case 5:
                         FindWord();
                         Console.Clear();
                         break;
+                    default:
+                        return;
                 }
             }
         }
@@ -79,6 +80,7 @@ namespace C_Practice
                 word.AddTranslation();
 
                 Word.Add(word);
+                DictController.Save();
             }
         }
 
@@ -91,6 +93,8 @@ namespace C_Practice
             Console.Write("Enter new original word - ");
             string newOriginal = Console.ReadLine();
             Word[index].Original = newOriginal;
+
+            DictController.Save();
         }
 
         public void ChangeOriginalWordByName()
@@ -101,6 +105,8 @@ namespace C_Practice
             Console.Write("Enter new original word - ");
             string newOriginal = Console.ReadLine();
             Word.Find(w => w.Original == oldOriginal).Original = newOriginal;
+
+            DictController.Save();
         }
 
         public void RemoveWord()
@@ -110,35 +116,8 @@ namespace C_Practice
             index = CorrectIndex(index);
 
             Word.RemoveAt(index);
-        }
 
-        public void Save()
-        {
-            string data = JsonConvert.SerializeObject(Word, Formatting.Indented);
-
-            using (StreamWriter writer = new StreamWriter("Dictionary.json", false, Encoding.UTF8))
-            {
-                writer.WriteLine(data);
-            }
-
-            Console.WriteLine($"{Name} dictionary has been saved!");
-        }
-
-        public void Load()
-        {
-            if (!File.Exists("Dictionary.json"))
-            {
-                Console.WriteLine("No such file was found!");
-                return;
-            }
-
-            using (StreamReader reader = new StreamReader("Dictionary.json"))
-            {
-                List<Word> data = JsonConvert.DeserializeObject<List<Word>>(reader.ReadToEnd());
-                Word = data;
-            }
-
-            Console.WriteLine($"{Name} dictionary data has been loaded!");
+            DictController.Save();
         }
 
         public void FindWord()
@@ -149,7 +128,6 @@ namespace C_Practice
 
             Word word = Word.Find(w => w.Original.Contains(foundWord));
             Console.WriteLine(word);
-
 
             word.ControlLoop();
         }

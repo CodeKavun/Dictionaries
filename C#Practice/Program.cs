@@ -9,8 +9,7 @@ namespace C_Practice
     {
         static void Main(string[] args)
         {
-            TranslationDictionary translationDictionary = new TranslationDictionary("Polish-Ukrainian");
-            translationDictionary.ControlLoop();
+            DictController.ControlLoop();
         }
     }
 }
